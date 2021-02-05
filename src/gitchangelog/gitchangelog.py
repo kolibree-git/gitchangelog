@@ -1364,7 +1364,7 @@ def kolibree_output(data, opts={}):
 
     token = opts.get("github_token")
     repo = opts.get("github_repo")
-    if not any([token, repo]):
+    if not all([token, repo]):
         die("Github token, repo and/or PR regexp config is missing.")
 
     # GitHub
