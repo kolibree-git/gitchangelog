@@ -82,16 +82,22 @@ ignore_regexps = [
 ## whenever you are tweaking this variable.
 ##
 section_regexps = [
-    ('New', [
-        r'^[nN]ew\s*:\s*((dev|use?r|pkg|test|doc)\s*:\s*)?([^\n]*)$',
-     ]),
-    ('Changes', [
-        r'^[cC]hg\s*:\s*((dev|use?r|pkg|test|doc)\s*:\s*)?([^\n]*)$',
-     ]),
     ('Fix', [
-        r'^[fF]ix\s*:\s*((dev|use?r|pkg|test|doc)\s*:\s*)?([^\n]*)$',
-     ]),
+        r'''(?ix)
+            (^fix)
+            |
+            (^\[fixt)
+        ''',
+    ]),
+    ('Feature', [
+        r'''(?ix)^
+            (
+                (\[?feature)
+                |
+                (\[?KLTB00)
+            )''',
 
+    ]),
     ('Other', None ## Match all lines
      ),
 
@@ -131,7 +137,7 @@ section_regexps = [
 ## Additionally, you can `pipe` the provided filters, for instance:
 #body_process = Wrap(regexp=r'\n(?=\w+\s*:)') | Indent(chars="  ")
 #body_process = Wrap(regexp=r'\n(?=\w+\s*:)')
-#body_process = noop
+# body_process = noop
 body_process = ReSub(r'((^|\n)[A-Z]\w+(-\w+)*: .*(\n\s+.*)*)+$', r'') | strip
 
 
@@ -141,6 +147,9 @@ body_process = ReSub(r'((^|\n)[A-Z]\w+(-\w+)*: .*(\n\s+.*)*)+$', r'') | strip
 ## be used in the changelog.
 ##
 ## Available constructs are those listed in ``body_process`` doc.
+# subject_process = (strip |
+#     ReSub(r'^(Fix)', r'R')
+# )
 subject_process = (strip |
     ReSub(r'^([cC]hg|[fF]ix|[nN]ew)\s*:\s*((dev|use?r|pkg|test|doc)\s*:\s*)?([^\n@]*)(@[a-z]+\s+)*$', r'\4') |
     SetIfEmpty("No commit message.") | ucfirst | final_dot)
@@ -157,12 +166,7 @@ tag_filter_regexp = r'^[0-9]+\.[0-9]+(\.[0-9]+)?$'
 ##
 ## This label will be used as the changelog Title of the last set of changes
 ## between last valid tag and HEAD if any.
-import os.path
-unreleased_version_label = lambda: swrap(
-    (["bash"] if WIN32 else []) +
-    [os.path.join(".", "autogen.sh"), "--get-version"],
-shell=False)
-
+unreleased_version_label = "(unreleased)"
 
 
 ## ``output_engine`` is a callable
@@ -193,10 +197,11 @@ shell=False)
 ##        Examples:
 ##           - makotemplate("restructuredtext")
 ##
-output_engine = rest_py
+#output_engine = rest_py
 #output_engine = mustache("restructuredtext")
 #output_engine = mustache("markdown")
 #output_engine = makotemplate("restructuredtext")
+output_engine = kolibree_output
 
 
 ## ``include_merge`` is a boolean
@@ -230,7 +235,7 @@ include_merge = True
 ##        Outputs directly to standard output
 ##        (This is the default)
 ##
-##   - FileInsertAtFirstRegexMatch(file, pattern, idx=lamda m: m.start(), flags)
+##   - FileInsertAtFirstRegexMatch(file, pattern, idx=lamda m: m.start())
 ##
 ##        Creates a callable that will parse given file for the given
 ##        regex pattern and will insert the output in the file.
@@ -292,3 +297,10 @@ include_merge = True
 #    "HEAD"
 #]
 revs = []
+
+##
+## Kolibree Output additions
+##
+## Github repo
+##
+github_repo = "kolibree-git/gitchangelog"
