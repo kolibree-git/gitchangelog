@@ -1414,8 +1414,6 @@ def kolibree_output(data, opts={}):
     def render_commit(commit, opts=opts):
         subject = commit["subject"]
 
-        subject += " [%s]" % (", ".join(commit["authors"]), )
-
         entry = indent('\n'.join(textwrap.wrap(subject)),
                        first="- ").strip() + "\n"
 
