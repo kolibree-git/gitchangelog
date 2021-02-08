@@ -1369,7 +1369,7 @@ def kolibree_output(data, opts={}):
 
     # GitHub
     github = None
-    re_pr_num = None
+    RE_PR_NUM = None
     if Github:
         try:
             github = Github(token)
@@ -1377,7 +1377,7 @@ def kolibree_output(data, opts={}):
         except Exception:
             die("Unable to connect to Github")
 
-        re_pr_num = re.compile(
+        RE_PR_NUM = re.compile(
             # Example: "Title of commit (#PR_NUM)"
             r"""
                 \(
@@ -1386,6 +1386,12 @@ def kolibree_output(data, opts={}):
                 $
             """,
             re.X,
+        )
+        # Extract only description section from Github PR body
+        RE_PR_DESC = re.compile(
+            # Example: PR template markdown file in git repo
+            r"##[ ]*Description(?P<desc>.*)##[ ]*Preflight Checklist",
+            re.DOTALL,
         )
 
     def rest_title(label, char="="):
@@ -1420,14 +1426,17 @@ def kolibree_output(data, opts={}):
         if commit["body"]:
             entry += "\n" + indent(commit["body"]) + "\n"
         else:
-            if re_pr_num:
+            if RE_PR_NUM:
                 # Get GitHub PR description/body
-                pr_num = re_pr_num.search(commit["subject"])
+                pr_num = RE_PR_NUM.search(commit["subject"])
                 pr_num = pr_num.groups()[0] if pr_num else None
                 if pr_num:
                     try:
                         pull = repo.get_pull(int(pr_num))
-                        entry += "\n```\n" + pull.body + "\n```\n"
+                        body = RE_PR_DESC.search(pull.body)
+                        body = body.groupdict()['desc'].strip() if body else ""
+                        if body:
+                            entry += "\n```\n" + body + "\n```\n"
                     except Exception as e:
                         err(f"Unable to retrieve PR #{pr_num} from Github.")
                         err(f"Exception: {e}")
