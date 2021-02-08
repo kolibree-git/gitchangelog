@@ -1369,6 +1369,7 @@ def kolibree_output(data, opts={}):
 
     # GitHub
     github = None
+    re_pr_num = None
     if Github:
         try:
             github = Github(token)
@@ -1421,16 +1422,17 @@ def kolibree_output(data, opts={}):
         if commit["body"]:
             entry += "\n" + indent(commit["body"]) + "\n"
         else:
-            # Get GitHub PR description/body
-            pr_num = re_pr_num.search(commit["subject"])
-            pr_num = pr_num.groups()[0] if pr_num else None
-            if pr_num:
-                try:
-                    pull = repo.get_pull(int(pr_num))
-                    entry += "\n```\n" + pull.body + "\n```\n"
-                except Exception as e:
-                    err(f"Unable to retrieve PR #{pr_num} from Github.")
-                    err(f"Exception: {e}")
+            if re_pr_num:
+                # Get GitHub PR description/body
+                pr_num = re_pr_num.search(commit["subject"])
+                pr_num = pr_num.groups()[0] if pr_num else None
+                if pr_num:
+                    try:
+                        pull = repo.get_pull(int(pr_num))
+                        entry += "\n```\n" + pull.body + "\n```\n"
+                    except Exception as e:
+                        err(f"Unable to retrieve PR #{pr_num} from Github.")
+                        err(f"Exception: {e}")
 
         return entry
 
