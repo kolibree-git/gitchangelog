@@ -94,7 +94,7 @@ section_regexps = [
             (
                 (\[?feature)
                 |
-                (\[?KLTB00)
+                (\[?KLTB002)
             )''',
 
     ]),
