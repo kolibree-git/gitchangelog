@@ -1438,8 +1438,8 @@ def kolibree_output(data, opts={}):
                         if body:
                             entry += "\n```\n" + body + "\n```\n"
                     except Exception as e:
-                        err(f"Unable to retrieve PR #{pr_num} from Github.")
-                        err(f"Exception: {e}")
+                        err("Unable to retrieve PR #{} from Github.".format(pr_num))
+                        err("Exception: {}".format(e))
 
         return entry
 
