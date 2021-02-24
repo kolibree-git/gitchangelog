@@ -1392,8 +1392,6 @@ def rest_py(data, opts={}):
 def kolibree_output(data, opts={}):
     """Returns Markdown Text changelog content from data.
 
-    Data retrieved from Jira acts as source of truth.
-
     Connect to Jira and use Jira title(summary) as changelog title/subject.
     Connect to GitHub if commit is missing a body and retrieve PR description.
     """
@@ -1407,14 +1405,6 @@ def kolibree_output(data, opts={}):
     jira = get_jira(jira_server, jira_username, jira_apitoken)
     RE_TICKET = None
     if jira:
-        try:
-            jira = JIRA(
-                server=jira_server,
-                basic_auth=(jira_username, jira_apitoken)
-            )
-        except Exception:
-            die("Unable to connect to Jira")
-
         RE_TICKET = re.compile(
             # Example: "[feature][KLTB002-XXX] Title of commit"
             r"\[KLTB002.+?\]",
