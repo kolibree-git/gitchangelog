@@ -1390,11 +1390,36 @@ def rest_py(data, opts={}):
 
 @available_in_config
 def kolibree_output(data, opts={}):
-    """Returns Markdown Text changelog content from data
+    """Returns Markdown Text changelog content from data.
 
+    Data retrieved from Jira acts as source of truth.
+
+    Connect to Jira and use Jira title(summary) as changelog title/subject.
     Connect to GitHub if commit is missing a body and retrieve PR description.
-    If GitHub is missing a description, connect to Jira and get task summary.
     """
+
+    # JIRA
+    jira_server = opts.get("jira_server")
+    jira_username = opts.get("jira_username")
+    jira_apitoken = opts.get("jira_apitoken")
+    if not all([jira_server, jira_username, jira_apitoken]):
+        die("Jira server, username and/or apitoken config is missing.")
+    jira = get_jira(jira_server, jira_username, jira_apitoken)
+    RE_TICKET = None
+    if jira:
+        try:
+            jira = JIRA(
+                server=jira_server,
+                basic_auth=(jira_username, jira_apitoken)
+            )
+        except Exception:
+            die("Unable to connect to Jira")
+
+        RE_TICKET = re.compile(
+            # Example: "[feature][KLTB002-XXX] Title of commit"
+            r"\[KLTB002.+?\]",
+            re.X,
+        )
 
     # Github
     github_token = opts.get("github_token")
@@ -1421,29 +1446,6 @@ def kolibree_output(data, opts={}):
             re.DOTALL,
         )
 
-    # JIRA
-    jira_server = opts.get("jira_server")
-    jira_username = opts.get("jira_username")
-    jira_apitoken = opts.get("jira_apitoken")
-    if not all([jira_server, jira_username, jira_apitoken]):
-        die("Jira server, username and/or apitoken config is missing.")
-    jira = get_jira(jira_server, jira_username, jira_apitoken)
-    RE_TICKET = None
-    if jira:
-        try:
-            jira = JIRA(
-                server=jira_server,
-                basic_auth=(jira_username, jira_apitoken)
-            )
-        except Exception:
-            die("Unable to connect to Jira")
-
-        RE_TICKET = re.compile(
-            # Example: "[feature][KLTB002-XXX] Title of commit"
-            r"\[KLTB002.+?\]",
-            re.X,
-        )
-
     def rest_title(label, char="="):
         return (label.strip() + "\n") + (char * len(label) + "\n")
 
@@ -1468,10 +1470,20 @@ def kolibree_output(data, opts={}):
         return s
 
     def render_commit(commit, opts=opts):
-        subject = commit["subject"]
+        # Get Jira summary
+        ticket = RE_TICKET.search(commit["subject"])
+        ticket = ticket.group()[1:-1] if ticket else None
+        if ticket:
+            try:
+                issue = jira.issue(ticket, fields="summary")
+                subject = "[{}] {}".format(ticket, issue.fields.summary)
+            except Exception as e:
+                err("Unable to retrieve Ticket #{} from Jira".format(ticket))
+                err("Exception: {}".format(e))
+        else:
+            subject = commit["subject"]
 
-        entry = indent('\n'.join(textwrap.wrap(subject)),
-                       first="- ").strip() + "\n"
+        entry = indent(subject, first="- ").strip() + "\n"
 
         if commit["body"]:
             entry += "\n" + indent(commit["body"]) + "\n"
@@ -1490,18 +1502,6 @@ def kolibree_output(data, opts={}):
                     except Exception as e:
                         err("Unable to retrieve PR #{} from Github.".format(pr_num))
                         err("Exception: {}".format(e))
-            elif RE_TICKET:
-                # Get Jira summary
-                ticket = RE_TICKET.search(commit["subject"])
-                ticket = ticket.group()[1:-1] if ticket else None
-                if ticket:
-                    try:
-                        issue = jira.issue(ticket, fields="summary")
-                        entry += "\n```\n" + issue.fields.summary + "\n```\n"
-                    except Exception as e:
-                        err("Unable to retrieve Ticket #{} from Jira".format(ticket))
-                        err("Exception: {}".format(e))
-
         return entry
 
     if data["title"]:
