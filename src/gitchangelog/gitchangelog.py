@@ -1466,7 +1466,11 @@ def kolibree_output(data, opts={}):
         if ticket:
             try:
                 issue = jira.issue(ticket, fields="summary")
-                subject = "[{}] {}".format(ticket, issue.fields.summary)
+                subject = "[{}]({}) {}".format(
+                    ticket,
+                    "{}/browse/{}".format(jira_server, ticket),
+                    issue.fields.summary,
+                )
             except Exception as e:
                 err("Unable to retrieve Ticket #{} from Jira".format(ticket))
                 err("Exception: {}".format(e))
