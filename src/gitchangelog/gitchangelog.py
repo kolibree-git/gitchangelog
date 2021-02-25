@@ -1461,8 +1461,10 @@ def kolibree_output(data, opts={}):
 
     def render_commit(commit, opts=opts):
         # Get Jira summary
-        ticket = RE_TICKET.search(commit["subject"])
-        ticket = ticket.group()[1:-1] if ticket else None
+        ticket = None
+        if RE_TICKET:
+            ticket = RE_TICKET.search(commit["subject"])
+            ticket = ticket.group()[1:-1] if ticket else None
         if ticket:
             try:
                 issue = jira.issue(ticket, fields="summary")
