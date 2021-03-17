@@ -49,7 +49,6 @@ DEBUG = None
 ## Platform and python compatibility
 ##
 
-PY_VERSION = float("%d.%d" % sys.version_info[0:2])
 WIN32 = sys.platform == 'win32'
 if WIN32:
     PLT_CFG = {
@@ -1812,12 +1811,6 @@ def safe_print(content):
               that can't be translated to characters in your current charset
               (%s).
             """) % sys.stdout.encoding))
-        if WIN32 and PY_VERSION < 3.6 and sys.stdout.encoding != 'utf-8':
-            ## As of PY 3.6, encoding is now ``utf-8`` regardless of
-            ## PYTHONIOENCODING
-            ## https://www.python.org/dev/peps/pep-0528/
-            stderr("  You might want to try to fix that by setting "
-                   "PYTHONIOENCODING to 'utf-8'.")
         exit(1)
     except IOError as e:
         if ((WIN32 and e.errno == 22) or                ## Invalid argument
