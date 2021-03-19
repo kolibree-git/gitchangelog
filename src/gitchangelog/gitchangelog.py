@@ -1286,7 +1286,7 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
 
     def render_commit(commit: str) -> tuple:
         """
-        Parse commit and return Jira section, well issue type and commit text.
+        Parse commit and return Jira issue type mapped as section and commit text.
         """
         section = "other"
 
