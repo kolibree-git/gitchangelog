@@ -1277,7 +1277,7 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
             jira_sections[section].append(entry)
 
         for section, entries in jira_sections.items():
-            if not entries:  # TODO: Do we want to keep section nevertheless?
+            if not entries:
                 continue
             s += "\n" + render_title(section, level=3) + "\n"
             for entry in entries:
