@@ -1313,7 +1313,7 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
         entry = indent(subject, first="- ").strip() + "\n"
 
         if commit["body"]:
-            entry += indent(commit["body"]) + "\n"
+            entry += indent(commit["body"]) + "\n\n"
         else:
             if RE_PR_NUM:
                 # Get GitHub PR description/body
@@ -1325,7 +1325,12 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
                         body = RE_PR_DESC.search(pull.body)
                         body = body.groupdict()['desc'].strip() if body else ""
                         if body:
-                            entry += "\n```\n" + body + "\n```\n"
+                            entry += "\n"
+                            entry += "\n".join(
+                                f"  {line}"
+                                for line in body.split("\n")
+                            )
+                            entry += "\n\n"
                     except Exception as e:
                         err("Unable to retrieve PR #{} from Github.".format(pr_num))
                         err("Exception: {}".format(e))
