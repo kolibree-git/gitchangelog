@@ -82,7 +82,7 @@ ignore_regexps = [
 ## whenever you are tweaking this variable.
 ##
 ## Note:
-## For ``kolibree output`` setting this varialbe has no effect since, since Jira
+## For ``kolibree output`` setting this varialbe has no effect, since Jira
 ## task/issue type will be used for section title.
 ##
 section_regexps = [
