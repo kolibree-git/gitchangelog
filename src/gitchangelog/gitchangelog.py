@@ -15,6 +15,7 @@ import contextlib
 import itertools
 import errno
 
+from enum import Enum
 from subprocess import Popen, PIPE
 from typing import Generator
 
@@ -1204,6 +1205,10 @@ JIRA_ISSUETYPE_TO_SECTION = {
     "bug": "Fix",
     "other": "Other",
 }
+class EntryType(Enum):
+    jira = "jira"
+    github = "github"
+    commit = "commit"
 
 
 @available_in_config
@@ -1255,7 +1260,7 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
         )
 
     # Commit body type
-    entry_desc = data.get("entry_desc").lower()
+    entry_desc = data.get("entry_desc", "").lower()
 
     def render_title(label: str, level: int = 1) -> str:
         return "#" * level + " " + label.strip() + "\n"
@@ -1320,12 +1325,12 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
         entry = indent(subject, first="- ").strip() + "\n"
 
         # Choose entry description
-        if ticket and entry_desc == "jira":
+        if ticket and entry_desc == EntryType.jira.value:
             desc = issue.fields.description if issue.fields.description else ""
             entry += indent("\n" + desc)
-        elif entry_desc == "commit" and commit["body"]:
+        elif entry_desc == EntryType.commit.value and commit["body"]:
             entry += indent(commit["body"] + "\n")
-        elif entry_desc == "github":
+        elif entry_desc == EntryType.github.value:
             if RE_PR_NUM:
                 # Get GitHub PR description/body
                 pr_num = RE_PR_NUM.search(commit["subject"])
