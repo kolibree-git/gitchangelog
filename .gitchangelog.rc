@@ -353,4 +353,4 @@ entry_desc = ""
 ##
 ## gitchangelog revlist -p PACKAGE
 ##
-packages = None
+packages = {}
