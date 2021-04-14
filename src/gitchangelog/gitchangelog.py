@@ -1612,7 +1612,7 @@ def versions_data_iter(repository, revlist=None, package=None, packages=None,
 
             part_of_package = True
 
-            # If we have package check that commit files are inside
+            # In case there is a package, check that commit files are inside
             # the package's directories
             if packages and package in packages:
                 paths = packages[package].get("paths")
