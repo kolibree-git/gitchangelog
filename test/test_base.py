@@ -319,14 +319,14 @@ class GitChangelogTest(BaseGitReposTest):
         self.assertContains(
             err.lower(), "missing value",
             msg="There should be an error message containing 'missing value'. "
-            "Current stderr:\n%s" % err)
+            "Current stderr:\n{err}")
         self.assertContains(
             err.lower(), "config file",
             msg="There should be an error message containing 'config file'. "
-            "Current stderr:\n%s" % err)
+            "Current stderr:\n{err}")
         self.assertEqual(
             errlvl, 1,
-            msg="Should faild.")
+            msg="Should have failed.")
         self.assertEqual(
             out, "",
             msg="No output is expected.")
@@ -341,14 +341,14 @@ class GitChangelogTest(BaseGitReposTest):
         self.assertContains(
             err.lower(), f"package '{package}'",
             msg=f"There should be an error message containing 'Package '{package}''. "
-            "Current stderr:\n%s" % err)
+            f"Current stderr:\n{err}")
         self.assertContains(
             err.lower(), "not defined in config file",
             msg="There should be an error message containing 'not defined in config file'. "
-            "Current stderr:\n%s" % err)
+            "Current stderr:\n{err}")
         self.assertEqual(
             errlvl, 1,
-            msg="Should faild.")
+            msg="Should have failed.")
         self.assertEqual(
             out, "",
             msg="No output is expected.")

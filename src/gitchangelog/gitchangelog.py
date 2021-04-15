@@ -1788,7 +1788,7 @@ def parse_cmd_line(usage, description, epilog, exname, version):
                             action="version", version=version)
 
     parser.add_argument('-p', '--package',
-                        help="Generate changelog just for provided package.",
+                        help="Generate changelog for provided package.",
                         action="store", dest="package", default=None)
     parser.add_argument('-d', '--debug',
                         help="Enable debug mode (show full tracebacks).",
