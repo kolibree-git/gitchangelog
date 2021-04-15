@@ -1223,9 +1223,6 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
     Connect to Jira and use Jira title(summary) as changelog title/subject.
     Connect to GitHub if commit is missing a body and retrieve PR description.
     """
-    # Products from config
-    packages = data.get("packages", None)
-
     # JIRA
     jira_server = opts.get("jira_server")
     jira_username = opts.get("jira_username")
