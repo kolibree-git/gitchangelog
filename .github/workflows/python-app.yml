@@ -23,7 +23,6 @@ jobs:
     - name: Git repository creation (required)
       run: |
         git init
-        git remote add origin git@github.com:kolibree-git/gitchangelog.git
         git fetch
         git reset origin/main
         git checkout origin/main
