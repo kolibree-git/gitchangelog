@@ -1240,8 +1240,8 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
     RE_TICKET = None
     if jira:
         RE_TICKET = re.compile(
-            # Example: "[feature][KLTB002-XXX] Title of commit"
-            r"\[KLTB002.+?\]",
+            # Example: "[feature][BBAL-XXX] Title of commit"
+            r"\[BBAL.+?\]",
             re.X,
         )
 
