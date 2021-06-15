@@ -1176,9 +1176,9 @@ def rest_py(data, opts={}):
         nb_sections = len(sections)
         for section in sections:
 
-            section_label = section["label"] if section.get("label", None) else "Other MLA"
+            section_label = section["label"] if section.get("label", None) else "Other"
 
-            if not (section_label == "Other MLA" and nb_sections == 1):
+            if not (section_label == "Other" and nb_sections == 1):
                 s += "\n" + rest_title(section_label, "~")
 
             for commit in section["commits"]:
@@ -1277,7 +1277,7 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
         return "#" * level + " " + label.strip() + "\n"
 
     def render_version(version: dict) -> str:
-        title = "%s (%s)" % (version["tag"], version["date"]) if version["tag"] else opts["unreleased_version_label"]
+        title = "TEST %s (%s)" % (version["tag"], version["date"]) if version["tag"] else opts["unreleased_version_label"]
         s = render_title(title, level=2)
 
         sections = version["sections"]
