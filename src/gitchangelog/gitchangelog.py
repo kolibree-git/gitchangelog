@@ -1176,9 +1176,9 @@ def rest_py(data, opts={}):
         nb_sections = len(sections)
         for section in sections:
 
-            section_label = section["label"] if section.get("label", None) else "Other"
+            section_label = section["label"] if section.get("label", None) else "Other MLA"
 
-            if not (section_label == "Other" and nb_sections == 1):
+            if not (section_label == "Other MLA" and nb_sections == 1):
                 s += "\n" + rest_title(section_label, "~")
 
             for commit in section["commits"]:
