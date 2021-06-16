@@ -1277,7 +1277,7 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
         return "#" * level + " " + label.strip() + "\n"
 
     def render_version(version: dict) -> str:
-        title = "[%s] %s (%s)" % (version["package"] or "", version["tag"], version["date"]) \
+        title = f"{'[' + version['package'] + ']' if version['package'] else ''} {version['tag']} ({version['date']})" \
             if version["tag"] else opts["unreleased_version_label"]
         s = render_title(title, level=2)
 
