@@ -1610,7 +1610,7 @@ def versions_data_iter(
             "tagger_date": tag.tagger_date if tag.has_annotated_tag else None,
             "tag": tag.identifier if tag.identifier != "HEAD" else None,
             "commit": tag,
-            "package": package if package else None
+            "package": package
         }
 
         sections = collections.defaultdict(list)
