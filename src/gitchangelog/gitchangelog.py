@@ -1277,7 +1277,7 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
         return "#" * level + " " + label.strip() + "\n"
 
     def render_version(version: dict) -> str:
-        title = "TEST %s (%s)" % (version["tag"], version["date"]) if version["tag"] else opts["unreleased_version_label"]
+        title = "[%s] %s (%s)" % (version["package"] or "", version["tag"], version["date"]) if version["tag"] else opts["unreleased_version_label"]
         s = render_title(title, level=2)
 
         sections = version["sections"]
@@ -1609,6 +1609,7 @@ def versions_data_iter(
             "tagger_date": tag.tagger_date if tag.has_annotated_tag else None,
             "tag": tag.identifier if tag.identifier != "HEAD" else None,
             "commit": tag,
+            "package": package if package else None
         }
 
         sections = collections.defaultdict(list)
