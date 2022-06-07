@@ -1277,8 +1277,81 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
     # Commit body type
     entry_desc = data.get("entry_desc", "").lower()
 
+    def render_subject_w_pr_link(subject: str, repo: str, pr: int) -> str:
+        link = f"https://github.com/{repo}/pull/{pr}"
+        return f'{subject[:-7]} [#{pr}]({link})'
+
     def render_title(label: str, level: int = 1) -> str:
         return "#" * level + " " + label.strip() + "\n"
+
+    def render_version_new_style(version: dict, new_title: bool = True) -> str:
+        if new_title:
+            title = f"{'[' + version['package'] + ']' if version['package'] else ''} {version['date']}"
+            s = "\n" + render_title(title, level=2)
+        else:
+            s = ""
+
+        sections = version["sections"]
+        if len(sections) != 1:
+            die("There can be exactly one section for kolibree output")
+
+        jira_sections = {section: [] for section in jira_issue_types.keys()}
+
+        for commit in sections[0]["commits"]:
+            section, entry = render_commit_new_style(commit)
+            jira_sections[section].append(entry)
+
+        for section, entries in jira_sections.items():
+            if not entries:
+                continue
+            for entry in entries:
+                s += entry + "\n"
+        return s
+
+    def render_commit_new_style(commit: str) -> tuple:
+        """
+        Parse commit and return Jira issue type mapped as section and commit text.
+        """
+        section = JIRA_ISSUE_TYPE_DEFAULT_KEY
+
+        # Get Jira info
+        ticket = None
+        if RE_TICKET:
+            ticket = RE_TICKET.search(commit["subject"])
+            ticket = ticket.group()[1:-1] if ticket else None
+            ticket = fix_incorrect_ticket(ticket)
+        if ticket:
+            try:
+                fields = "summary,issuetype"
+                if entry_desc == EntryType.jira.value:
+                    fields += ",description"
+                issue = jira.issue(ticket, fields=fields)
+                subject = "[{}]({}) {}".format(
+                    ticket,
+                    "{}/browse/{}".format(jira_server, ticket),
+                    issue.fields.summary,
+                )
+                section = issue.fields.issuetype.name.lower()
+            except Exception as e:
+                err("Unable to retrieve Ticket #{} from Jira".format(ticket))
+                err("Exception: {}".format(e))
+        else:
+            subject = commit["subject"]
+
+        if RE_PR_NUM:
+            # Get GitHub PR description/body
+            pr_num = RE_PR_NUM.search(subject)
+            pr_num = pr_num.groups()[0] if pr_num else None
+            if pr_num:
+                subject = render_subject_w_pr_link(subject, github_repo, pr_num)
+
+        # Get commit date
+        commit_date = datetime.datetime.fromtimestamp(int(commit["commit"].author_date_timestamp)).strftime('%Y-%m-%d')
+
+        # Subject
+        entry = indent(subject, first="- ").strip() + f"    *{commit_date}*"
+
+        return section, entry
 
     def render_version(version: dict) -> str:
         title = f"{'[' + version['package'] + ']' if version['package'] else ''} {version['tag']} ({version['date']})" \
@@ -1362,13 +1435,26 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
 
         return section, entry
 
-    if data["title"]:
-        yield render_title(data["title"], level=1) + "\n\n"
+    # Use new style [KLTB002-19572]
+    if entry_desc == "compact":
+        if data["title"]:
+            yield render_title(data["title"], level=1) + "\n"
 
-    for version in data["versions"]:
-        if len(version["sections"]) > 0:
-            yield render_version(version) + "\n\n"
+        prev_version_date = None
+        for version in data["versions"]:
+            if len(version["sections"]) > 0:
+                if prev_version_date == version["date"]:
+                    yield render_version_new_style(version, new_title=False)
+                else:
+                    yield render_version_new_style(version)
+                prev_version_date = version["date"]
+    else:
+        if data["title"]:
+            yield render_title(data["title"], level=1) + "\n\n"
 
+        for version in data["versions"]:
+            if len(version["sections"]) > 0:
+                yield render_version(version) + "\n\n"
 
 ## formatter engines
 
