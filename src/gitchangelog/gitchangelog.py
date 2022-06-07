@@ -1284,7 +1284,7 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
     def render_title(label: str, level: int = 1) -> str:
         return "#" * level + " " + label.strip() + "\n"
 
-    def render_version_new_style(version: dict, new_title: bool = True) -> str:
+    def render_version_compact(version: dict, new_title: bool = True) -> str:
         if new_title:
             title = f"{'[' + version['package'] + ']' if version['package'] else ''} {version['date']}"
             s = "\n" + render_title(title, level=2)
@@ -1298,7 +1298,7 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
         jira_sections = {section: [] for section in jira_issue_types.keys()}
 
         for commit in sections[0]["commits"]:
-            section, entry = render_commit_new_style(commit)
+            section, entry = render_commit_compact(commit)
             jira_sections[section].append(entry)
 
         for section, entries in jira_sections.items():
@@ -1308,7 +1308,7 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
                 s += entry + "\n"
         return s
 
-    def render_commit_new_style(commit: str) -> tuple:
+    def render_commit_compact(commit: str) -> tuple:
         """
         Parse commit and return Jira issue type mapped as section and commit text.
         """
@@ -1444,9 +1444,9 @@ def kolibree_output(data: dict, opts: dict = {}) -> Generator[str, None, None]:
         for version in data["versions"]:
             if len(version["sections"]) > 0:
                 if prev_version_date == version["date"]:
-                    yield render_version_new_style(version, new_title=False)
+                    yield render_version_compact(version, new_title=False)
                 else:
-                    yield render_version_new_style(version)
+                    yield render_version_compact(version)
                 prev_version_date = version["date"]
     else:
         if data["title"]:
