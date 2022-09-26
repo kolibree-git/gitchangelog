@@ -27,7 +27,7 @@ The script requires access to GitHub and Jira. Also the current directory needs 
      --jira-project "KLTB002" \
      --jira-username "mihai.georgescu@kolibree.com" \
      --jira-server "https://kolibree.atlassian.net/" \
-     --repository "kolibree-git/iOS-monorepo"
+     --repository "baracodadailyhealthtech/iOS-monorepo"
 ```
 
 `jira-access-token` and `github-access-token` can be passed as parameter. In case they are missing, a secure prompt will be presented to the user.
