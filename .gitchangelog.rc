@@ -310,7 +310,7 @@ revs = []
 ##
 ## Github repo
 ##
-github_repo = "kolibree-git/gitchangelog"
+github_repo = "baracodadailyhealthtech/gitchangelog"
 ##
 ## Jira server
 ##

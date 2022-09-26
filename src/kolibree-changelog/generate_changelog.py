@@ -85,7 +85,7 @@ def _configure_argument_parser(parser: argparse.ArgumentParser):
     parser.add_argument(
         "--repository",
         required=True,
-        help="Repository name, eg: kolibree-git/iOS-monorepo",
+        help="Repository name, eg: baracodadailyhealthtech/iOS-monorepo",
     )
 
     parser.add_argument("--filename", help="Changelog filename", default="CHANGELOG.md")
