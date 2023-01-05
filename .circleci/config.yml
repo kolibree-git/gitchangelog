@@ -16,5 +16,5 @@ jobs:
 workflows:
   argoworkflows:
     jobs:
-      - trigger_argoworkflows_build:
+      - test_context_gitchangelog:
           context: test_context_gitchangelog
