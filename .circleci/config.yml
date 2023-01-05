@@ -1,0 +1,20 @@
+version: 2.1
+
+jobs:
+  test_context_gitchangelog:
+    docker:
+      - image: 'ubuntu:22.04'
+    resource_class: small
+    steps:
+      - checkout
+      - run:
+          name: Test
+          no_output_timeout: 40m
+          command: |
+              echo "TEST"
+
+workflows:
+  argoworkflows:
+    jobs:
+      - trigger_argoworkflows_build:
+          context: test_context_gitchangelog
