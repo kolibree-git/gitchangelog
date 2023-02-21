@@ -314,7 +314,7 @@ github_repo = "kolibree-git/gitchangelog"
 ##
 ## Jira server
 ##
-jira_server = "https://kolibree.atlassian.net"
+jira_server = "https://baracoda.atlassian.net"
 ##
 ## Jira project key
 ##
