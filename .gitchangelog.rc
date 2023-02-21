@@ -308,6 +308,13 @@ revs = []
 ##
 ## Kolibree Output additions
 ##
+## Set and expose Github and Jira tokens via env variables
+## so that changelog setup is properly loaded and validated.
+##
+## export GITHUB_TOKEN="..."
+## export JIRA_USERNAME="..."
+## export JIRA_APITOKEN="..."
+## 
 ## Github repo
 ##
 github_repo = "kolibree-git/gitchangelog"
